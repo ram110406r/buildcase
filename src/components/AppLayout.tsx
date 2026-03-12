@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Search } from "lucide-react";
 import { Outlet } from "react-router-dom";
+import { Footer } from "./Footer";
 
 export function AppLayout() {
   return (
@@ -25,7 +26,7 @@ export function AppLayout() {
                 style={{ color: "#7A7F85" }}
               />
               <div
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 min-w-[260px]"
+                className="hidden sm:flex items-center gap-2 px-3 py-1.5 min-w-[260px] cursor-text hover:border-foreground/20 transition-colors"
                 style={{
                   background: "#EDE9E0",
                   border: "1px solid #D6D2C8",
@@ -81,6 +82,8 @@ export function AppLayout() {
           <main className="flex-1 p-8 overflow-auto">
             <Outlet />
           </main>
+
+          <Footer />
         </div>
       </div>
     </SidebarProvider>

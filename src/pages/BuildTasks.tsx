@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { GripVertical, Plus } from "lucide-react";
 
 const MONO: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace" };

@@ -1,6 +1,6 @@
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Upload, Cpu } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
 
 const MONO: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace" };
 
