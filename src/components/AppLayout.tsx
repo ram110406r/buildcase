@@ -1,33 +1,84 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Bell, Search, User } from "lucide-react";
+import { Search } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
 export function AppLayout() {
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full" style={{ background: "#F3EFE6" }}>
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center justify-between border-b border-border/50 px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-              <div className="hidden sm:flex items-center gap-2 ml-4 px-3 py-1.5 rounded-lg bg-muted/50 text-muted-foreground text-sm min-w-[240px]">
-                <Search className="h-3.5 w-3.5" />
-                <span>Search...</span>
-                <kbd className="ml-auto text-xs bg-muted px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
+          {/* Header — 64px instrument console */}
+          <header
+            className="flex items-center justify-between px-6 sticky top-0 z-10"
+            style={{
+              height: "64px",
+              background: "#F3EFE6",
+              borderBottom: "1px solid #D6D2C8",
+            }}
+          >
+            {/* Left — trigger + terminal search */}
+            <div className="flex items-center gap-4">
+              <SidebarTrigger
+                className="text-muted-foreground hover:text-foreground"
+                style={{ color: "#7A7F85" }}
+              />
+              <div
+                className="hidden sm:flex items-center gap-2 px-3 py-1.5 min-w-[260px]"
+                style={{
+                  background: "#EDE9E0",
+                  border: "1px solid #D6D2C8",
+                  borderRadius: "2px",
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: "12px",
+                  color: "#7A7F85",
+                }}
+              >
+                <span style={{ color: "#E36A2C", fontSize: "11px" }}>&gt;_</span>
+                <Search className="h-3 w-3" />
+                <span>Search project...</span>
+                <kbd
+                  className="ml-auto"
+                  style={{
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: "10px",
+                    background: "#D6D2C8",
+                    padding: "1px 5px",
+                    borderRadius: "2px",
+                    color: "#7A7F85",
+                  }}
+                >
+                  ⌘K
+                </kbd>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
-                <Bell className="h-4 w-4" />
-              </button>
-              <div className="h-8 w-8 rounded-full gradient-primary flex items-center justify-center">
-                <User className="h-4 w-4 text-primary-foreground" />
-              </div>
+
+            {/* Right — status indicator */}
+            <div
+              className="flex items-center gap-2"
+              style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: "11px",
+                color: "#7A7F85",
+                letterSpacing: "0.05em",
+              }}
+            >
+              <span
+                style={{
+                  width: "7px",
+                  height: "7px",
+                  borderRadius: "50%",
+                  background: "#E36A2C",
+                  display: "inline-block",
+                  boxShadow: "0 0 0 2px #E36A2C33",
+                }}
+              />
+              <span>STATUS · READY</span>
             </div>
           </header>
-          <main className="flex-1 p-6 overflow-auto">
+
+          <main className="flex-1 p-8 overflow-auto">
             <Outlet />
           </main>
         </div>

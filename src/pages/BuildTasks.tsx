@@ -1,25 +1,17 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { GripVertical, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-type Task = {
-  id: string;
-  title: string;
-  priority: "low" | "medium" | "high";
-  assignee: string;
-};
+const MONO: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace" };
 
-type Column = {
-  id: string;
-  title: string;
-  tasks: Task[];
-};
+type Priority = "low" | "medium" | "high";
+type Task = { id: string; title: string; priority: Priority; assignee: string };
+type Column = { id: string; title: string; tasks: Task[] };
 
 const initialColumns: Column[] = [
   {
     id: "backlog",
-    title: "Backlog",
+    title: "BACKLOG",
     tasks: [
       { id: "1", title: "Design social auth buttons", priority: "medium", assignee: "AK" },
       { id: "2", title: "Write privacy policy copy", priority: "low", assignee: "JR" },
@@ -27,14 +19,14 @@ const initialColumns: Column[] = [
   },
   {
     id: "ready",
-    title: "Ready",
+    title: "READY",
     tasks: [
       { id: "3", title: "Set up OAuth credentials", priority: "high", assignee: "MK" },
     ],
   },
   {
     id: "in-progress",
-    title: "In Progress",
+    title: "IN PROGRESS",
     tasks: [
       { id: "4", title: "Implement Google OAuth flow", priority: "high", assignee: "AK" },
       { id: "5", title: "Build progressive onboarding UI", priority: "medium", assignee: "JR" },
@@ -42,24 +34,24 @@ const initialColumns: Column[] = [
   },
   {
     id: "review",
-    title: "Review",
+    title: "REVIEW",
     tasks: [
       { id: "6", title: "Magic link email template", priority: "medium", assignee: "MK" },
     ],
   },
   {
     id: "done",
-    title: "Done",
+    title: "DONE",
     tasks: [
       { id: "7", title: "Database schema for user profiles", priority: "high", assignee: "AK" },
     ],
   },
 ];
 
-const priorityColor: Record<string, string> = {
-  high: "bg-destructive/10 text-destructive",
-  medium: "bg-secondary/10 text-secondary",
-  low: "bg-accent/10 text-accent",
+const priorityStyle: Record<Priority, React.CSSProperties> = {
+  high: { background: "#F44B4B18", color: "#C0392B", border: "1px solid #F44B4B40" },
+  medium: { background: "#F2A65A1A", color: "#B07830", border: "1px solid #F2A65A40" },
+  low: { background: "#7A7F851A", color: "#5A5F65", border: "1px solid #7A7F8540" },
 };
 
 export default function BuildTasks() {
@@ -69,48 +61,148 @@ export default function BuildTasks() {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.2 }}
       className="space-y-6"
     >
-      <div className="flex items-start justify-between">
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Build Tasks</h1>
-          <p className="text-sm text-muted-foreground mt-1">Developer-ready tasks from your specs.</p>
+          <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em" }}>
+            BUILDCASE / TASKS
+          </p>
+          <h1
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 700,
+              fontSize: "22px",
+              color: "#23262B",
+              marginTop: "6px",
+            }}
+          >
+            Build Tasks
+          </h1>
+          <p style={{ fontSize: "13px", color: "#7A7F85", marginTop: "4px" }}>
+            Developer-ready tasks generated from feature specs.
+          </p>
         </div>
-        <Button className="gradient-primary text-primary-foreground hover:opacity-90 gap-2">
-          <Plus className="h-4 w-4" /> Add Task
-        </Button>
+        <button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            background: "#23262B",
+            color: "#F3EFE6",
+            border: "none",
+            borderRadius: "4px",
+            padding: "9px 16px",
+            fontSize: "12px",
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: "'Inter', sans-serif",
+            flexShrink: 0,
+          }}
+        >
+          <Plus style={{ width: "14px", height: "14px" }} />
+          Add Task
+        </button>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      {/* Kanban board */}
+      <div style={{ display: "flex", gap: "16px", overflowX: "auto", paddingBottom: "16px" }}>
         {columns.map((column) => (
-          <div key={column.id} className="min-w-[260px] w-[260px] shrink-0">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <div key={column.id} style={{ minWidth: "240px", width: "240px", flexShrink: 0 }}>
+            {/* Column header */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "10px",
+                padding: "8px 12px",
+                background: "#F7F4EC",
+                border: "1px solid #D6D2C8",
+                borderRadius: "4px",
+              }}
+            >
+              <span style={{ ...MONO, fontSize: "9px", fontWeight: 600, letterSpacing: "0.1em", color: "#23262B" }}>
                 {column.title}
-              </h3>
-              <span className="text-xs text-muted-foreground font-mono bg-muted/50 px-1.5 py-0.5 rounded">
+              </span>
+              <span
+                style={{
+                  ...MONO,
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  color: "#E36A2C",
+                  background: "#E36A2C15",
+                  padding: "1px 6px",
+                  borderRadius: "2px",
+                }}
+              >
                 {column.tasks.length}
               </span>
             </div>
-            <div className="space-y-2">
+
+            {/* Tasks */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {column.tasks.map((task) => (
                 <motion.div
                   key={task.id}
                   layout
-                  className="glass-panel card-hover p-3 cursor-pointer"
+                  whileHover={{ y: -2 }}
+                  transition={{ duration: 0.15 }}
+                  style={{
+                    background: "#F7F4EC",
+                    border: "1px solid #D6D2C8",
+                    borderRadius: "4px",
+                    padding: "12px",
+                    cursor: "pointer",
+                  }}
                 >
-                  <div className="flex items-start gap-2">
-                    <GripVertical className="h-4 w-4 text-muted-foreground/30 mt-0.5 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">{task.title}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className={`text-xs px-1.5 py-0.5 rounded font-medium capitalize ${priorityColor[task.priority]}`}>
-                          {task.priority}
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                    <GripVertical
+                      style={{ width: "12px", height: "12px", color: "#D6D2C8", marginTop: "1px", flexShrink: 0 }}
+                    />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: "12px", fontWeight: 500, color: "#23262B", lineHeight: "1.5" }}>
+                        {task.title}
+                      </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "8px" }}>
+                        <span
+                          style={{
+                            ...MONO,
+                            fontSize: "8px",
+                            fontWeight: 600,
+                            letterSpacing: "0.06em",
+                            padding: "2px 6px",
+                            borderRadius: "2px",
+                            ...priorityStyle[task.priority],
+                          }}
+                        >
+                          {task.priority.toUpperCase()}
                         </span>
-                        <span className="text-xs h-5 w-5 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-medium">
-                          {task.assignee[0]}
-                        </span>
+                        <div
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            borderRadius: "50%",
+                            background: "#23262B",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <span
+                            style={{
+                              ...MONO,
+                              fontSize: "8px",
+                              fontWeight: 700,
+                              color: "#F3EFE6",
+                            }}
+                          >
+                            {task.assignee[0]}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

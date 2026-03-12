@@ -1,9 +1,6 @@
 import { motion } from "framer-motion";
-import { Bug, Plus, Sparkles } from "lucide-react";
+import { Bug, Cpu } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -12,6 +9,72 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const MONO: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace" };
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  background: "#F9F6EF",
+  border: "1px solid #D6D2C8",
+  borderRadius: "4px",
+  padding: "9px 12px",
+  fontSize: "13px",
+  color: "#23262B",
+  fontFamily: "'Inter', sans-serif",
+  outline: "none",
+  boxSizing: "border-box",
+};
+
+const monoInputStyle: React.CSSProperties = {
+  ...inputStyle,
+  fontFamily: "'IBM Plex Mono', monospace",
+  fontSize: "12px",
+  lineHeight: "1.7",
+};
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label
+      style={{
+        ...MONO,
+        fontSize: "9px",
+        letterSpacing: "0.1em",
+        color: "#7A7F85",
+        fontWeight: 600,
+        display: "block",
+        marginBottom: "6px",
+      }}
+    >
+      {children}
+    </label>
+  );
+}
+
+function FormModule({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        background: "#F7F4EC",
+        border: "1px solid #D6D2C8",
+        borderRadius: "4px",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          padding: "8px 20px",
+          borderBottom: "1px solid #D6D2C8",
+          background: "#EDE9E0",
+        }}
+      >
+        <span style={{ ...MONO, fontSize: "9px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>
+          {title}
+        </span>
+      </div>
+      <div style={{ padding: "20px" }}>{children}</div>
+    </div>
+  );
+}
+
 export default function BugReports() {
   const [title, setTitle] = useState("");
 
@@ -19,73 +82,157 @@ export default function BugReports() {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="max-w-3xl space-y-6"
+      transition={{ duration: 0.2 }}
+      className="max-w-3xl space-y-5"
     >
-      <div className="flex items-start justify-between">
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Bug Reports</h1>
-          <p className="text-sm text-muted-foreground mt-1">Structured bug reports for engineering teams.</p>
+          <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em" }}>
+            BUILDCASE / BUGS
+          </p>
+          <h1
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 700,
+              fontSize: "22px",
+              color: "#23262B",
+              marginTop: "6px",
+            }}
+          >
+            Bug Reports
+          </h1>
+          <p style={{ fontSize: "13px", color: "#7A7F85", marginTop: "4px" }}>
+            Structured incident reports for engineering teams.
+          </p>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            background: "#F44B4B15",
+            border: "1px solid #F44B4B40",
+            borderRadius: "4px",
+            padding: "6px 12px",
+          }}
+        >
+          <Bug style={{ width: "12px", height: "12px", color: "#C0392B" }} />
+          <span style={{ ...MONO, fontSize: "9px", color: "#C0392B", fontWeight: 600, letterSpacing: "0.08em" }}>
+            INCIDENT FORM
+          </span>
         </div>
       </div>
 
-      <div className="glass-panel p-6 space-y-5">
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Title</label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Brief description of the bug"
-            className="bg-muted/30 border-border/50"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Description</label>
-          <Textarea
-            placeholder="Detailed description of the issue..."
-            className="bg-muted/30 border-border/50 min-h-[100px]"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Steps to Reproduce</label>
-          <Textarea
-            placeholder="1. Go to...&#10;2. Click on...&#10;3. Observe..."
-            className="bg-muted/30 border-border/50 min-h-[100px] font-mono text-sm"
-          />
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Expected Result</label>
-            <Textarea placeholder="What should happen..." className="bg-muted/30 border-border/50 min-h-[80px]" />
+      {/* Module 1: Identification */}
+      <FormModule title="IDENTIFICATION">
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div>
+            <FieldLabel>TITLE</FieldLabel>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Brief description of the bug"
+              style={inputStyle}
+            />
           </div>
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Actual Result</label>
-            <Textarea placeholder="What actually happens..." className="bg-muted/30 border-border/50 min-h-[80px]" />
+          <div>
+            <FieldLabel>DESCRIPTION</FieldLabel>
+            <textarea
+              placeholder="Detailed description of the issue..."
+              rows={3}
+              style={{ ...monoInputStyle, resize: "vertical" }}
+            />
           </div>
         </div>
+      </FormModule>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Severity</label>
+      {/* Module 2: Reproduction */}
+      <FormModule title="REPRODUCTION STEPS">
+        <div>
+          <FieldLabel>STEPS TO REPRODUCE</FieldLabel>
+          <textarea
+            placeholder={"1. Go to...\n2. Click on...\n3. Observe..."}
+            rows={4}
+            style={{ ...monoInputStyle, resize: "vertical" }}
+          />
+        </div>
+      </FormModule>
+
+      {/* Module 3: Expected vs Actual */}
+      <FormModule title="EXPECTED vs ACTUAL">
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "16px",
+          }}
+        >
+          <div>
+            <FieldLabel>✓ EXPECTED RESULT</FieldLabel>
+            <textarea
+              placeholder="What should happen..."
+              rows={4}
+              style={{
+                ...monoInputStyle,
+                resize: "none",
+                borderColor: "#7A7F8530",
+              }}
+            />
+          </div>
+          <div>
+            <FieldLabel>✗ ACTUAL RESULT</FieldLabel>
+            <textarea
+              placeholder="What actually happens..."
+              rows={4}
+              style={{
+                ...monoInputStyle,
+                resize: "none",
+                background: "#FFF5F0",
+                borderColor: "#F44B4B40",
+              }}
+            />
+          </div>
+        </div>
+      </FormModule>
+
+      {/* Module 4: Classification */}
+      <FormModule title="CLASSIFICATION">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+          <div>
+            <FieldLabel>SEVERITY</FieldLabel>
             <Select>
-              <SelectTrigger className="bg-muted/30 border-border/50">
+              <SelectTrigger
+                style={{
+                  background: "#F9F6EF",
+                  border: "1px solid #D6D2C8",
+                  borderRadius: "4px",
+                  height: "38px",
+                  fontSize: "13px",
+                }}
+              >
                 <SelectValue placeholder="Select severity" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="critical">Critical</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="critical">🔴 Critical</SelectItem>
+                <SelectItem value="high">🟠 High</SelectItem>
+                <SelectItem value="medium">🟡 Medium</SelectItem>
+                <SelectItem value="low">⚪ Low</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Environment</label>
+          <div>
+            <FieldLabel>ENVIRONMENT</FieldLabel>
             <Select>
-              <SelectTrigger className="bg-muted/30 border-border/50">
+              <SelectTrigger
+                style={{
+                  background: "#F9F6EF",
+                  border: "1px solid #D6D2C8",
+                  borderRadius: "4px",
+                  height: "38px",
+                  fontSize: "13px",
+                }}
+              >
                 <SelectValue placeholder="Select environment" />
               </SelectTrigger>
               <SelectContent>
@@ -96,15 +243,43 @@ export default function BugReports() {
             </Select>
           </div>
         </div>
+      </FormModule>
 
-        <div className="flex gap-3 pt-2">
-          <Button className="gradient-primary text-primary-foreground hover:opacity-90 gap-2">
-            <Sparkles className="h-4 w-4" /> Generate Engineering Report
-          </Button>
-          <Button variant="outline" className="border-border/50 text-muted-foreground hover:text-foreground">
-            Save Draft
-          </Button>
-        </div>
+      {/* Actions */}
+      <div style={{ display: "flex", gap: "10px", paddingTop: "4px" }}>
+        <button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "#23262B",
+            color: "#F3EFE6",
+            border: "none",
+            borderRadius: "4px",
+            padding: "10px 20px",
+            fontSize: "13px",
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          <Cpu style={{ width: "14px", height: "14px" }} />
+          Generate Engineering Report
+        </button>
+        <button
+          style={{
+            background: "transparent",
+            color: "#7A7F85",
+            border: "1px solid #D6D2C8",
+            borderRadius: "4px",
+            padding: "10px 20px",
+            fontSize: "13px",
+            cursor: "pointer",
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          Save Draft
+        </button>
       </div>
     </motion.div>
   );

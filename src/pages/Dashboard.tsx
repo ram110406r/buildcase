@@ -7,15 +7,14 @@ import {
   ArrowRight,
   Clock,
   BarChart3,
-  Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const quickActions = [
-  { label: "Research Analysis", icon: Search, to: "/research", color: "from-primary to-secondary" },
-  { label: "Feature Spec", icon: FileText, to: "/specs", color: "from-secondary to-accent" },
-  { label: "Bug Report", icon: Bug, to: "/bugs", color: "from-destructive to-secondary" },
-  { label: "Build Plan", icon: ListTodo, to: "/tasks", color: "from-accent to-primary" },
+  { label: "Research Analysis", sub: "INPUT EVIDENCE", icon: Search, to: "/research" },
+  { label: "Feature Spec", sub: "GENERATE SPEC", icon: FileText, to: "/specs" },
+  { label: "Bug Report", sub: "FILE REPORT", icon: Bug, to: "/bugs" },
+  { label: "Build Plan", sub: "CREATE TASKS", icon: ListTodo, to: "/tasks" },
 ];
 
 const recentProjects = [
@@ -26,50 +25,106 @@ const recentProjects = [
 ];
 
 const recentOutputs = [
-  { title: "PRD: Onboarding V2", type: "Spec", icon: FileText, time: "2h ago" },
-  { title: "Analysis: User Churn", type: "Analysis", icon: BarChart3, time: "5h ago" },
-  { title: "Bug: Checkout Crash", type: "Bug", icon: Bug, time: "1d ago" },
-  { title: "Tasks: Auth Module", type: "Tasks", icon: ListTodo, time: "2d ago" },
+  { title: "PRD: Onboarding V2", type: "SPEC", icon: FileText, time: "2h ago" },
+  { title: "Analysis: User Churn", type: "ANALYSIS", icon: BarChart3, time: "5h ago" },
+  { title: "Bug: Checkout Crash", type: "BUG", icon: Bug, time: "1d ago" },
+  { title: "Tasks: Auth Module", type: "TASKS", icon: ListTodo, time: "2d ago" },
 ];
+
+const statusColor: Record<string, { bg: string; text: string }> = {
+  Complete: { bg: "#E36A2C1A", text: "#C4561E" },
+  Review: { bg: "#F2A65A1A", text: "#B07830" },
+  "In Progress": { bg: "#23262B12", text: "#23262B" },
+};
 
 const container = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
 };
-
 const item = {
   hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.2 } },
 };
+
+const MONO: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace" };
 
 export default function Dashboard() {
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-8 max-w-6xl">
+    <motion.div variants={container} initial="hidden" animate="show" className="space-y-10 max-w-6xl">
       {/* Header */}
       <motion.div variants={item}>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">Convert ideas into structured product docs.</p>
+        <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em" }}>
+          BUILDCASE / DASHBOARD
+        </p>
+        <h1
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 700,
+            fontSize: "22px",
+            color: "#23262B",
+            marginTop: "6px",
+          }}
+        >
+          Product Intelligence Console
+        </h1>
+        <p style={{ fontSize: "13px", color: "#7A7F85", marginTop: "4px" }}>
+          Convert evidence into structured product decisions.
+        </p>
       </motion.div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions — diagnostic modules */}
       <motion.div variants={item}>
-        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-          <Zap className="h-3.5 w-3.5" /> Quick Actions
-        </h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em", marginBottom: "12px" }}>
+          ◈ MODULES
+        </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {quickActions.map((action) => (
             <Link
               key={action.label}
               to={action.to}
-              className="glass-panel card-hover p-4 group flex flex-col gap-3"
+              className="panel-hover group"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                background: "#F7F4EC",
+                border: "1px solid #D6D2C8",
+                borderRadius: "4px",
+                padding: "20px",
+                textDecoration: "none",
+              }}
             >
-              <div className={`h-9 w-9 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center`}>
-                <action.icon className="h-4 w-4 text-foreground" />
+              <div
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  background: "#EDE9E0",
+                  border: "1px solid #D6D2C8",
+                  borderRadius: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <action.icon style={{ width: "16px", height: "16px", color: "#E36A2C" }} />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-foreground">{action.label}</span>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+              <div>
+                <p style={{ fontSize: "13px", fontWeight: 600, color: "#23262B" }}>{action.label}</p>
+                <p style={{ ...MONO, fontSize: "9px", color: "#7A7F85", letterSpacing: "0.08em", marginTop: "4px" }}>
+                  {action.sub}
+                </p>
               </div>
+              <ArrowRight
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  color: "#E36A2C",
+                  marginTop: "auto",
+                  opacity: 0,
+                  transition: "opacity 180ms",
+                }}
+                className="group-hover:opacity-100"
+              />
             </Link>
           ))}
         </div>
@@ -77,45 +132,106 @@ export default function Dashboard() {
 
       {/* Recent Projects */}
       <motion.div variants={item}>
-        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3">Recent Projects</h2>
+        <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em", marginBottom: "12px" }}>
+          ◈ RECENT PROJECTS
+        </p>
         <div className="grid sm:grid-cols-2 gap-3">
-          {recentProjects.map((project) => (
-            <div key={project.name} className="glass-panel card-hover p-4 flex items-start justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-foreground">{project.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1">{project.type}</p>
+          {recentProjects.map((project) => {
+            const sc = statusColor[project.status] ?? statusColor["In Progress"];
+            return (
+              <div
+                key={project.name}
+                className="panel-hover"
+                style={{
+                  background: "#F7F4EC",
+                  border: "1px solid #D6D2C8",
+                  borderRadius: "4px",
+                  padding: "16px 20px",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <p style={{ fontSize: "13px", fontWeight: 600, color: "#23262B" }}>
+                    {project.name}
+                  </p>
+                  <p style={{ ...MONO, fontSize: "9px", color: "#7A7F85", marginTop: "4px", letterSpacing: "0.06em" }}>
+                    {project.type.toUpperCase()}
+                  </p>
+                </div>
+                <div style={{ textAlign: "right", flexShrink: 0, marginLeft: "12px" }}>
+                  <span
+                    style={{
+                      ...MONO,
+                      fontSize: "9px",
+                      fontWeight: 500,
+                      background: sc.bg,
+                      color: sc.text,
+                      padding: "2px 8px",
+                      borderRadius: "2px",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    {project.status.toUpperCase()}
+                  </span>
+                  <p
+                    style={{
+                      ...MONO,
+                      fontSize: "9px",
+                      color: "#7A7F85",
+                      marginTop: "6px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                      gap: "4px",
+                    }}
+                  >
+                    <Clock style={{ width: "10px", height: "10px" }} />
+                    {project.updated}
+                  </p>
+                </div>
               </div>
-              <div className="text-right">
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  project.status === "Complete"
-                    ? "bg-accent/10 text-accent"
-                    : project.status === "Review"
-                    ? "bg-secondary/10 text-secondary"
-                    : "bg-primary/10 text-primary"
-                }`}>
-                  {project.status}
-                </span>
-                <p className="text-xs text-muted-foreground mt-1.5 flex items-center justify-end gap-1">
-                  <Clock className="h-3 w-3" /> {project.updated}
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </motion.div>
 
       {/* Recent Outputs */}
       <motion.div variants={item}>
-        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3">Recent Outputs</h2>
-        <div className="glass-panel divide-y divide-border/50">
-          {recentOutputs.map((output) => (
-            <div key={output.title} className="flex items-center gap-3 p-3 hover:bg-muted/30 transition-colors cursor-pointer">
-              <output.icon className="h-4 w-4 text-muted-foreground shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{output.title}</p>
-                <p className="text-xs text-muted-foreground">{output.type}</p>
+        <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em", marginBottom: "12px" }}>
+          ◈ RECENT OUTPUTS
+        </p>
+        <div
+          style={{
+            background: "#F7F4EC",
+            border: "1px solid #D6D2C8",
+            borderRadius: "4px",
+            overflow: "hidden",
+          }}
+        >
+          {recentOutputs.map((output, i) => (
+            <div
+              key={output.title}
+              className="group"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "12px 20px",
+                borderBottom: i < recentOutputs.length - 1 ? "1px solid #D6D2C8" : "none",
+                cursor: "pointer",
+                transition: "background 150ms",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#EDE9E0"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+            >
+              <output.icon style={{ width: "14px", height: "14px", color: "#7A7F85", flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: "13px", fontWeight: 500, color: "#23262B" }}>{output.title}</p>
+                <p style={{ ...MONO, fontSize: "9px", color: "#7A7F85", letterSpacing: "0.08em" }}>{output.type}</p>
               </div>
-              <span className="text-xs text-muted-foreground">{output.time}</span>
+              <span style={{ ...MONO, fontSize: "9px", color: "#7A7F85", flexShrink: 0 }}>{output.time}</span>
             </div>
           ))}
         </div>

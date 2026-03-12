@@ -21,13 +21,13 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Research", url: "/research", icon: Search },
-  { title: "Analysis", url: "/analysis", icon: BarChart3 },
-  { title: "Specs", url: "/specs", icon: FileText },
-  { title: "Build Tasks", url: "/tasks", icon: ListTodo },
-  { title: "Bug Reports", url: "/bugs", icon: Bug },
-  { title: "Settings", url: "/settings", icon: Settings },
+  { title: "DASHBOARD", url: "/", icon: LayoutDashboard },
+  { title: "RESEARCH", url: "/research", icon: Search },
+  { title: "ANALYSIS", url: "/analysis", icon: BarChart3 },
+  { title: "SPECS", url: "/specs", icon: FileText },
+  { title: "TASKS", url: "/tasks", icon: ListTodo },
+  { title: "BUGS", url: "/bugs", icon: Bug },
+  { title: "SETTINGS", url: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -36,36 +36,84 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarContent>
-        <div className="px-4 py-5">
+    <Sidebar
+      collapsible="icon"
+      style={{
+        background: "#F7F4EC",
+        borderRight: "1px solid #D6D2C8",
+      }}
+    >
+      <SidebarContent style={{ background: "#F7F4EC" }}>
+        {/* Brand */}
+        <div className="px-4 py-5" style={{ borderBottom: "1px solid #D6D2C8" }}>
           {!collapsed ? (
-            <h1 className="text-lg font-bold tracking-tight text-foreground">
-              <span className="gradient-primary bg-clip-text text-transparent">Build</span>case
+            <h1
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 700,
+                fontSize: "15px",
+                letterSpacing: "-0.01em",
+                color: "#23262B",
+              }}
+            >
+              Build
+              <span style={{ color: "#E36A2C" }}>case</span>
             </h1>
           ) : (
-            <span className="gradient-primary bg-clip-text text-transparent font-bold text-lg">B</span>
+            <span
+              style={{
+                fontWeight: 700,
+                fontSize: "15px",
+                color: "#E36A2C",
+              }}
+            >
+              B
+            </span>
           )}
         </div>
 
-        <SidebarGroup>
+        <SidebarGroup style={{ paddingTop: "12px" }}>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/"}
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/50"
-                      activeClassName="bg-primary/10 text-primary font-medium"
-                    >
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && <span className="text-sm">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item) => {
+                const isActive =
+                  item.url === "/"
+                    ? location.pathname === "/"
+                    : location.pathname.startsWith(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={item.url}
+                        end={item.url === "/"}
+                        className="flex items-center gap-3 px-4 py-2.5 transition-colors"
+                        style={{
+                          borderLeft: isActive
+                            ? "3px solid #E36A2C"
+                            : "3px solid transparent",
+                          background: isActive ? "#EDE9E0" : "transparent",
+                          color: isActive ? "#23262B" : "#7A7F85",
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: "10px",
+                          fontWeight: 500,
+                          letterSpacing: "0.1em",
+                          textDecoration: "none",
+                        }}
+                      >
+                        <item.icon
+                          className="shrink-0"
+                          style={{
+                            width: "14px",
+                            height: "14px",
+                            color: isActive ? "#E36A2C" : "#7A7F85",
+                          }}
+                        />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
