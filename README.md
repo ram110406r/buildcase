@@ -1,118 +1,101 @@
 # Buildcase
 
-Welcome to **Buildcase**! This is a modern frontend React application bootstrapped with [Vite](https://vitejs.dev/) and configured with a top-tier tech stack for performance, developer experience, and beautiful UI.
+**Buildcase** is a professional decision instrument and project diagnostic suite. It transforms the typical "SaaS dashboard" into a calm, focused, retro-industrial environment reminiscent of analog diagnostic hardware and control consoles.
 
-## 🚀 Tech Stack
+Built with a precision tech stack for architects, engineers, and high-level project managers who require clarity over clutter.
 
-This project leverages the following modern tools and frameworks:
+---
 
-### Core
-- **[React](https://react.dev/) (v18)**: Core UI library.
-- **[TypeScript](https://www.typescriptlang.org/)**: For robust type safety and excellent developer tooling.
-- **[Vite](https://vitejs.dev/)**: Next-generation, lightning-fast frontend tooling and development server.
+## 🏛️ Visual Philosophy: "The Decision Instrument"
 
-### Styling & UI Components
-- **[Tailwind CSS](https://tailwindcss.com/)**: A utility-first CSS framework for rapid UI development.
-- **[shadcn-ui](https://ui.shadcn.com/)** & **[Radix UI](https://www.radix-ui.com/)**: Accessible, unstyled component primitives combined with Tailwind for building high-quality design systems.
-- **[Framer Motion](https://www.framer.com/motion/)**: Production-ready animation library for React.
-- **[Lucide React](https://lucide.dev/)**: Beautiful and consistent icons.
+Buildcase departs from generic modern UI trends, opting for a **"Retro Diagnostic Machine"** aesthetic:
+- **Parchment & Ink Palette**: Warm backgrounds with sharp, dark-ink typography.
+- **Instrument Console Layout**: Sidebar and panels designed as physical hardware modules.
+- **Monospaced Utility**: IBM Plex Mono for technical data and labels.
+- **Purposeful Motion**: Subtle micro-animations (fade-ups, dot-indicators) that mimic an analog readout.
 
-### Data & State Management
-- **[React Query](https://tanstack.com/query/latest) (@tanstack/react-query)**: Powerful asynchronous state management, caching, and synchronization for server data.
-- **[React Router](https://reactrouter.dom/) (v6)**: Client-side routing for seamless page navigation.
+---
 
-### Forms & Validation
-- **[React Hook Form](https://react-hook-form.com/)**: Performant, flexible, and extensible forms with easy-to-use validation.
-- **[Zod](https://zod.dev/)**: TypeScript-first schema declaration and validation library.
+## 🛠️ Modules & Features
 
-### Testing & QA
-- **[Vitest](https://vitest.dev/)**: A blazing fast unit test framework powered by Vite.
-- **[Playwright](https://playwright.dev/)**: Reliable end-to-end testing for modern web apps.
-- **[ESLint](https://eslint.org/)**: Pluggable linting utility for catching errors early.
+Buildcase is organized into specialized diagnostic modules:
+
+- **Dashboard**: High-level telemetry and status overview of all active initiatives.
+- **Research**: Repository for market insights, data extraction, and competitive analysis.
+- **Analysis**: Deep-dive logic engine for processing complex data and project variables.
+- **Specs**: The "Schematics" room — housing technical requirements and architecture blueprints.
+- **Build Tasks**: Operational command center for tracking development and engineering progress.
+- **Bug Reports**: Diagnostic terminal for identifying and triaging system anomalies.
+
+---
+
+## 🚀 Technical Stack
+
+A robust foundation focused on performance and reliability:
+
+- **Frontend**: [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com/) + [Radix UI](https://www.radix-ui.com/)
+- **State & Data**: [TanStack Query](https://tanstack.com/query/latest) (v5)
+- **Routing**: [React Router](https://reactrouter.com/) (v6)
+- **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Testing**: [Vitest](https://vitest.dev/) & [Playwright](https://playwright.dev/)
+
+---
 
 ## 📂 Project Structure
 
 ```text
 buildcase/
 ├── src/
-│   ├── components/       # Reusable UI components (including shadcn-ui in `ui/`)
-│   │   ├── ui/           # Foundational shadcn components
-│   │   ├── AppLayout.tsx # Main application layout wrapper
-│   │   └── AppSidebar.tsx# Navigation sidebar component
-│   ├── hooks/            # Custom React hooks
-│   ├── lib/              # Utility functions and shared helpers
-│   ├── pages/            # Application route views (e.g., Dashboard, Research, Specs)
-│   ├── test/             # Test utilities and configurations
-│   ├── App.tsx           # Root React component and routing setup
-│   ├── index.css         # Global styles and Tailwind directives
-│   └── main.tsx          # Application entry point
-├── public/               # Static assets
-├── eslint.config.js      # ESLint configuration
-├── playwright.config.ts  # Playwright E2E configuration 
-├── tailwind.config.ts    # Tailwind CSS configuration
-├── tsconfig.json         # TypeScript configurations
-├── vite.config.ts        # Vite configuration
-└── vitest.config.ts      # Vitest configuration
+│   ├── components/       # UI instrumentation (shadcn + custom console parts)
+│   ├── hooks/            # Logic & sensory hooks
+│   ├── lib/              # Diagnostic utilities & shared helpers
+│   ├── pages/            # Core diagnostic modules (Dashboard, Research, etc.)
+│   ├── App.tsx           # Telemetry routing entry
+│   └── index.css         # Global aesthetics & hardware themes
+├── public/               # Static schematics & assets
+├── playwright.config.ts  # E2E diagnostic config
+├── tailwind.config.ts    # Aesthetic token definitions
+└── vite.config.ts        # Propulsion settings
 ```
 
-## 🛠️ Getting Started
+---
 
-To get a local copy up and running, follow these steps.
+## 🛠️ Operational Guide
 
 ### Prerequisites
-Make sure you have Node.js and npm (or Bun, which has a lockfile included) installed. We recommend Node.js v18 or later.
+- [Node.js](https://nodejs.org/) (v18+)
+- [Bun](https://bun.sh/) (Optional, recommended for performance)
 
 ### Installation
-
-1. **Clone the repository:**
+1. Clone the instrument:
    ```sh
-   git clone <YOUR_GIT_URL>
-   cd buildcase
+   git clone <REPOSITORY_URL>
+   cd idea-architect
    ```
-
-2. **Install the dependencies:**
+2. Install components:
    ```sh
    npm install
-   # or with bun: bun install
+   # or
+   bun install
    ```
 
-### Running the App
-
-Start the development server with Hot Module Replacement (HMR):
-
+### Execution
+Start the machine in development mode:
 ```sh
 npm run dev
-# or with bun: bun run dev
 ```
+Navigate to `http://localhost:5173`.
 
-Open your browser and navigate to `http://localhost:5173` (or the port specified in your terminal).
+### Quality Assurance
+- **Unit Tests**: `npm run test`
+- **Build Production**: `npm run build`
 
-## 🧪 Testing
+---
 
-The project is configured for both unit tests and end-to-end testing.
+## ⚖️ License
 
-**Run unit tests (Vitest):**
-```sh
-npm run test
-```
-
-**Watch mode for unit tests:**
-```sh
-npm run test:watch
-```
-
-*(For E2E tests, refer to `playwright.config.ts` and ensure Playwright browsers are installed via `npx playwright install`)*
-
-## 📦 Building for Production
-
-To create a production-ready build:
-
-```sh
-npm run build
-```
-
-This command bundles the app using Vite, minifying assets and optimizing them for deployment. You can test the production build locally with:
-
-```sh
-npm run preview
-```
+Distributed under the MIT License. See `LICENSE` for more information.
