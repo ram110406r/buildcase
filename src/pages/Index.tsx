@@ -18,6 +18,9 @@ const Index = () => {
           <ShieldCheck className="h-8 w-8 text-orange-600" />
           <Activity className="h-8 w-8 text-neutral-400" />
         </div>
+        <div className="flex justify-center mb-6">
+          <img src="/logo.png" alt="Buildcase Logo" className="h-20 w-auto" />
+        </div>
         <h1 className="text-4xl font-bold tracking-tight text-neutral-900 sm:text-6xl">
           Buildcase <span className="text-orange-600">v0.4.2</span>
         </h1>

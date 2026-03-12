@@ -45,9 +45,19 @@ export function AppSidebar() {
     >
       <SidebarContent style={{ background: "#F7F4EC" }}>
         {/* Brand */}
-        <div className="px-4 py-5" style={{ borderBottom: "1px solid #D6D2C8" }}>
-          {!collapsed ? (
+        <div className="px-4 py-5 flex items-center justify-center" style={{ borderBottom: "1px solid #D6D2C8" }}>
+          <img 
+            src="/logo.png" 
+            alt="Buildcase Logo" 
+            style={{ 
+              width: collapsed ? "24px" : "32px", 
+              height: "auto",
+              transition: "width 0.2s ease-in-out"
+            }} 
+          />
+          {!collapsed && (
             <h1
+              className="ml-2"
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: 700,
@@ -56,19 +66,8 @@ export function AppSidebar() {
                 color: "#23262B",
               }}
             >
-              Build
-              <span style={{ color: "#E36A2C" }}>case</span>
+              Build<span style={{ color: "#E36A2C" }}>case</span>
             </h1>
-          ) : (
-            <span
-              style={{
-                fontWeight: 700,
-                fontSize: "15px",
-                color: "#E36A2C",
-              }}
-            >
-              B
-            </span>
           )}
         </div>
 
