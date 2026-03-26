@@ -1,113 +1,103 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { User, Shield, Monitor, Bell, Save, LucideIcon } from "lucide-react";
+import { Settings as SettingsIcon, Save } from "lucide-react";
+import { useSettingsStore } from "@/lib/store";
+import { useToast } from "@/hooks/use-toast";
 
 const MONO: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace" };
+const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.07 } } };
+const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.2 } } };
 
-const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
-const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
-
-function SettingsModule({ icon: Icon, title, children }: { icon: LucideIcon, title: string, children: React.ReactNode }) {
+function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; label: string }) {
   return (
-    <motion.div variants={item} className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-orange-600" />
-        <h2 style={{ ...MONO, fontSize: "12px", fontWeight: 600, letterSpacing: "0.1em" }}>{title}</h2>
-      </div>
-      <div className="glass-panel p-6 space-y-4 bg-[#F7F4EC] border-[#D6D2C8] relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
-          <Icon className="h-24 w-24" />
-        </div>
-        {children}
-      </div>
-    </motion.div>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0" }}>
+      <span style={{ fontSize: "13px", color: "#23262B" }}>{label}</span>
+      <button onClick={onToggle} style={{
+        width: "38px", height: "20px", borderRadius: "10px", border: "none", cursor: "pointer",
+        background: on ? "#23262B" : "#D6D2C8", position: "relative", transition: "background 200ms",
+      }}>
+        <span style={{
+          width: "14px", height: "14px", borderRadius: "50%", background: "#F3EFE6",
+          position: "absolute", top: "3px", left: on ? "21px" : "3px", transition: "left 200ms",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
+        }} />
+      </button>
+    </div>
   );
 }
 
-export default function SettingsPage() {
+export default function Settings() {
+  const store = useSettingsStore();
+  const { toast } = useToast();
+  const [name, setName] = useState(store.operatorName);
+
+  const handleSave = () => {
+    store.setOperatorName(name.trim() || "Admin Operator");
+    toast({ title: "Settings saved", description: "Your preferences have been committed." });
+  };
+
+  const themes = ["Parchment (Default)", "High Contrast", "Terminal Noir"] as const;
+
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="max-w-4xl space-y-10"
-    >
+    <motion.div variants={container} initial="hidden" animate="show" className="max-w-2xl space-y-6">
       <motion.div variants={item}>
-        <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em" }}>SYSTEM / SETTINGS</p>
-        <h1 className="text-2xl font-bold text-foreground mt-2">Console Configuration</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage your telemetry preferences and access credentials.</p>
+        <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em" }}>BUILDCASE / SETTINGS</p>
+        <h1 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "22px", color: "#23262B", marginTop: "6px" }}>
+          System Configuration
+        </h1>
+        <p style={{ fontSize: "13px", color: "#7A7F85", marginTop: "4px" }}>Operator preferences and system toggles.</p>
       </motion.div>
 
-      <div className="space-y-8">
-        <SettingsModule icon={User} title="IDENTITY_PROFILE">
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <label style={{ ...MONO, fontSize: "10px", color: "#7A7F85" }}>OPERATOR_NAME</label>
-              <input 
-                className="w-full bg-[#EDE9E0] border border-[#D6D2C8] px-3 py-2 text-sm rounded-sm"
-                defaultValue="Admin Operator"
-              />
-            </div>
-            <div className="space-y-1">
-              <label style={{ ...MONO, fontSize: "10px", color: "#7A7F85" }}>ACCESS_LEVEL</label>
-              <div className="px-3 py-2 text-sm bg-[#EDE9E0]/50 border border-[#D6D2C8] rounded-sm text-muted-foreground">
-                LEVEL_05 (SUPERUSER)
-              </div>
-            </div>
+      {/* Operator Identity */}
+      <motion.div variants={item} style={{ background: "#F7F4EC", border: "1px solid #D6D2C8", borderRadius: "4px", overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 20px", borderBottom: "1px solid #D6D2C8", background: "#EDE9E0" }}>
+          <SettingsIcon style={{ width: 12, height: 12, color: "#E36A2C" }} />
+          <span style={{ ...MONO, fontSize: "10px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>OPERATOR IDENTITY</span>
+        </div>
+        <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.08em" }}>OPERATOR NAME</label>
+            <input value={name} onChange={(e) => setName(e.target.value)}
+              style={{ ...MONO, fontSize: "12px", padding: "8px 12px", background: "#F9F6EF", border: "1px solid #D6D2C8", borderRadius: "4px", color: "#23262B", outline: "none", width: "100%", boxSizing: "border-box" }} />
           </div>
-        </SettingsModule>
+        </div>
+      </motion.div>
 
-        <SettingsModule icon={Monitor} title="INTERFACE_STYLING">
-          <div className="flex gap-4">
-            {["Parchment (Default)", "High Contrast", "Terminal Noir"].map((theme) => (
-              <button 
-                key={theme}
-                className={`px-4 py-2 text-xs border border-[#D6D2C8] rounded-sm transition-all ${theme === "Parchment (Default)" ? "bg-[#23262B] text-[#F3EFE6]" : "bg-[#EDE9E0] hover:bg-[#E8E4DC]"}`}
-                style={MONO}
-              >
-                {theme.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </SettingsModule>
+      {/* Theme */}
+      <motion.div variants={item} style={{ background: "#F7F4EC", border: "1px solid #D6D2C8", borderRadius: "4px", overflow: "hidden" }}>
+        <div style={{ padding: "10px 20px", borderBottom: "1px solid #D6D2C8", background: "#EDE9E0" }}>
+          <span style={{ ...MONO, fontSize: "10px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>VISUAL THEME</span>
+        </div>
+        <div style={{ padding: "16px 20px", display: "flex", gap: "10px" }}>
+          {themes.map((t) => (
+            <button key={t} onClick={() => store.setTheme(t)} style={{
+              ...MONO, fontSize: "10px", padding: "6px 16px", borderRadius: "3px", cursor: "pointer", fontWeight: 600,
+              border: "1px solid #D6D2C8", background: store.theme === t ? "#23262B" : "#F9F6EF", color: store.theme === t ? "#F3EFE6" : "#23262B",
+            }}>{t.toUpperCase()}</button>
+          ))}
+        </div>
+      </motion.div>
 
-        <SettingsModule icon={Bell} title="TELEMETRY_ALERTS">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Critical Errors</p>
-                <p className="text-xs text-muted-foreground">Receive alerts for system anomalies.</p>
-              </div>
-              <div className="h-5 w-10 bg-orange-600 rounded-full relative cursor-pointer shadow-inner">
-                <div className="absolute right-1 top-1 h-3 w-3 bg-white rounded-full" />
-              </div>
-            </div>
-            <div className="flex items-center justify-between opacity-50">
-              <div>
-                <p className="text-sm font-medium">Auto-Archiving</p>
-                <p className="text-xs text-muted-foreground">Automatically archive completed specs.</p>
-              </div>
-              <div className="h-5 w-10 bg-[#D6D2C8] rounded-full relative cursor-not-allowed">
-                <div className="absolute left-1 top-1 h-3 w-3 bg-white rounded-full" />
-              </div>
-            </div>
-          </div>
-        </SettingsModule>
+      {/* System Toggles */}
+      <motion.div variants={item} style={{ background: "#F7F4EC", border: "1px solid #D6D2C8", borderRadius: "4px", overflow: "hidden" }}>
+        <div style={{ padding: "10px 20px", borderBottom: "1px solid #D6D2C8", background: "#EDE9E0" }}>
+          <span style={{ ...MONO, fontSize: "10px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>SYSTEM TOGGLES</span>
+        </div>
+        <div style={{ padding: "8px 20px" }}>
+          <Toggle on={store.criticalAlerts} onToggle={store.toggleCriticalAlerts} label="Critical Alerts" />
+          <div style={{ borderTop: "1px solid #E8E4DC" }} />
+          <Toggle on={store.autoArchiving} onToggle={store.toggleAutoArchiving} label="Auto-Archiving" />
+        </div>
+      </motion.div>
 
-        <SettingsModule icon={Shield} title="SECURITY_PROTOCOLS">
-          <div className="space-y-4">
-            <button className="text-xs font-semibold px-4 py-2 border border-red-200 text-red-600 rounded-sm hover:bg-red-50 transition-colors" style={MONO}>
-              ROTATE_ACCESS_KEYS
-            </button>
-            <p className="text-[10px] text-muted-foreground" style={MONO}>LAST_ROTATION: 2026-03-01 14:22 UTC</p>
-          </div>
-        </SettingsModule>
-      </div>
-
-      <motion.div variants={item} className="pt-6 border-t border-[#D6D2C8]">
-        <button className="flex items-center gap-2 bg-[#23262B] text-[#F3EFE6] px-6 py-2.5 rounded-sm hover:bg-black transition-all shadow-lg active:transform active:scale-95">
-          <Save className="h-4 w-4" />
-          <span className="text-xs font-bold" style={MONO}>COMMIT_CHANGES</span>
+      {/* Save */}
+      <motion.div variants={item}>
+        <button onClick={handleSave} style={{
+          display: "flex", alignItems: "center", gap: "6px",
+          background: "#23262B", color: "#F3EFE6", border: "none", borderRadius: "4px",
+          padding: "10px 20px", fontSize: "12px", fontWeight: 600, cursor: "pointer", fontFamily: "'Inter', sans-serif",
+        }}>
+          <Save style={{ width: 14, height: 14 }} /> Commit Changes
         </button>
       </motion.div>
     </motion.div>

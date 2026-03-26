@@ -1,272 +1,288 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FileText, User, CheckSquare, AlertCircle, Plus } from "lucide-react";
+import { FileText, Plus, Trash2, Check, ChevronRight, X, Download } from "lucide-react";
+import { useSpecStore, type Spec } from "@/lib/store";
+import { useToast } from "@/hooks/use-toast";
 
 const MONO: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace" };
-
-const userStories = [
-  { role: "New User", action: "sign up with Google", benefit: "skip manual form filling" },
-  { role: "Returning User", action: "see my progress on a dashboard", benefit: "quickly resume where I left off" },
-  { role: "Admin", action: "view user signup analytics", benefit: "understand conversion rates" },
-];
-
-const requirements = [
-  { text: "OAuth 2.0 integration with Google and GitHub", done: true },
-  { text: "Progressive profile completion after signup", done: false },
-  { text: "Email verification with magic link option", done: false },
-  { text: "Rate limiting on signup endpoint (5 req/min)", done: true },
-  { text: "GDPR consent checkbox with link to privacy policy", done: false },
-];
-
-const edgeCases = [
-  { title: "Duplicate email across providers", description: "User signs up with email, then tries Google with same email. System should link accounts." },
-  { title: "Expired magic link", description: "User clicks verification link after 24h expiry. Show clear error and resend option." },
-  { title: "Network failure mid-signup", description: "Handle partial state: user created but not verified. Allow retry without duplicate." },
-];
-
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.07 } } };
 const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.2 } } };
 
-function SectionPanel({
-  icon: Icon,
-  title,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  children: React.ReactNode;
-}) {
+const priorityColor = {
+  High: { bg: "#E36A2C18", text: "#C4561E" },
+  Medium: { bg: "#F2A65A18", text: "#B07830" },
+  Low: { bg: "#23262B12", text: "#7A7F85" },
+};
+
+/* ───── New Spec Form (inline) ───── */
+function NewSpecForm({ onClose }: { onClose: () => void }) {
+  const { addSpec } = useSpecStore();
+  const { toast } = useToast();
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [priority, setPriority] = useState<"High" | "Medium" | "Low">("Medium");
+
+  const submit = () => {
+    if (!title.trim()) return;
+    addSpec({
+      title: title.trim(), description: desc.trim(), priority,
+      sprint: "—", storyPoints: 0,
+      userStories: [], requirements: [], edgeCases: [],
+    });
+    toast({ title: "Spec created", description: `"${title.trim()}" added.` });
+    onClose();
+  };
+
   return (
-    <div
-      style={{
-        background: "#F7F4EC",
-        border: "1px solid #D6D2C8",
-        borderRadius: "4px",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          padding: "10px 20px",
-          borderBottom: "1px solid #D6D2C8",
-          background: "#EDE9E0",
-        }}
-      >
-        <Icon style={{ width: "12px", height: "12px", color: "#E36A2C" }} />
-        <span style={{ ...MONO, fontSize: "10px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>
-          {title}
-        </span>
+    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+      style={{ background: "#F7F4EC", border: "1px solid #D6D2C8", borderRadius: "4px", overflow: "hidden" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", borderBottom: "1px solid #D6D2C8", background: "#EDE9E0" }}>
+        <span style={{ ...MONO, fontSize: "10px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>NEW SPEC</span>
+        <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#7A7F85" }}><X style={{ width: 14, height: 14 }} /></button>
       </div>
-      <div style={{ padding: "20px" }}>{children}</div>
-    </div>
+      <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <label style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.08em" }}>TITLE *</label>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Feature name"
+            style={{ ...MONO, fontSize: "12px", padding: "8px 12px", background: "#F9F6EF", border: "1px solid #D6D2C8", borderRadius: "4px", color: "#23262B", outline: "none", width: "100%", boxSizing: "border-box" }} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <label style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.08em" }}>DESCRIPTION</label>
+          <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="What does this feature do?"
+            style={{ ...MONO, fontSize: "12px", padding: "8px 12px", background: "#F9F6EF", border: "1px solid #D6D2C8", borderRadius: "4px", color: "#23262B", outline: "none", resize: "vertical", minHeight: "60px", width: "100%", boxSizing: "border-box" }} />
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          {(["High", "Medium", "Low"] as const).map((p) => (
+            <button key={p} onClick={() => setPriority(p)} style={{
+              ...MONO, fontSize: "10px", padding: "5px 14px", borderRadius: "2px", cursor: "pointer", fontWeight: 600,
+              border: "1px solid #D6D2C8", background: priority === p ? "#23262B" : "#F9F6EF", color: priority === p ? "#F3EFE6" : "#23262B",
+            }}>{p.toUpperCase()}</button>
+          ))}
+        </div>
+        <button onClick={submit} disabled={!title.trim()} style={{
+          display: "flex", alignItems: "center", gap: "6px", alignSelf: "flex-start",
+          background: title.trim() ? "#23262B" : "#7A7F85", color: "#F3EFE6", border: "none", borderRadius: "4px",
+          padding: "9px 18px", fontSize: "12px", fontWeight: 600, cursor: title.trim() ? "pointer" : "not-allowed", fontFamily: "'Inter', sans-serif",
+        }}>
+          <Plus style={{ width: 14, height: 14 }} /> Create Spec
+        </button>
+      </div>
+    </motion.div>
   );
 }
 
-export default function Specs() {
+/* ───── Spec Detail View ───── */
+function SpecDetail({ spec, onBack }: { spec: Spec; onBack: () => void }) {
+  const { toggleRequirement, removeSpec } = useSpecStore();
+  const { toast } = useToast();
+  const pc = priorityColor[spec.priority];
+
+  const handleExport = (format: "json" | "pdf") => {
+    const exportData = {
+      id: spec.id,
+      title: spec.title,
+      description: spec.description,
+      priority: spec.priority,
+      userStories: spec.userStories,
+      requirements: spec.requirements,
+      edgeCases: spec.edgeCases,
+      exportedAt: new Date().toISOString(),
+    };
+
+    if (format === "json") {
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${spec.title.replace(/\s+/g, "_").toLowerCase()}_brief.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast({ title: "Exported", description: "Brief exported as JSON" });
+    } else {
+      // PDF export simulation - in production would call backend
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head><title>${spec.title}</title></head>
+            <body style="font-family: Arial, sans-serif; padding: 40px;">
+              <h1>${spec.title}</h1>
+              <p><strong>Priority:</strong> ${spec.priority}</p>
+              <p><strong>Description:</strong> ${spec.description}</p>
+              <h2>User Stories</h2>
+              <ul>${spec.userStories.map(s => `<li>As a ${s.role}, I want ${s.action} so that ${s.benefit}</li>`).join("")}</ul>
+              <h2>Requirements</h2>
+              <ul>${spec.requirements.map(r => `<li>${r.done ? "✓" : "○"} ${r.text}</li>`).join("")}</ul>
+              <h2>Edge Cases</h2>
+              <ul>${spec.edgeCases.map(e => `<li><strong>${e.title}</strong>: ${e.description}</li>`).join("")}</ul>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+        toast({ title: "Exported", description: "Print dialog opened for PDF" });
+      }
+    }
+  };
+
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl space-y-6">
-      {/* Header */}
-      <motion.div variants={item} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-        <div>
-          <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em" }}>
-            BUILDCASE / SPECS
-          </p>
-          <h1
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 700,
-              fontSize: "22px",
-              color: "#23262B",
-              marginTop: "6px",
-            }}
-          >
-            Feature Spec Generator
-          </h1>
-          <p style={{ fontSize: "13px", color: "#7A7F85", marginTop: "4px" }}>
-            Structured product requirement documents.
-          </p>
-        </div>
-        <button
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            background: "#23262B",
-            color: "#F3EFE6",
-            border: "none",
-            borderRadius: "4px",
-            padding: "9px 16px",
-            fontSize: "12px",
-            fontWeight: 600,
-            cursor: "pointer",
-            fontFamily: "'Inter', sans-serif",
-            flexShrink: 0,
-          }}
-        >
-          <Plus style={{ width: "14px", height: "14px" }} />
-          New Spec
-        </button>
-      </motion.div>
-
-      {/* Feature Overview */}
       <motion.div variants={item}>
-        <SectionPanel icon={FileText} title="FEATURE OVERVIEW">
-          <h3 style={{ fontSize: "16px", fontWeight: 600, color: "#23262B" }}>User Onboarding V2</h3>
-          <p style={{ fontSize: "13px", color: "#7A7F85", marginTop: "8px", lineHeight: "1.6" }}>
-            Redesign the signup and onboarding flow to reduce friction, add social authentication,
-            and implement progressive profile completion. Target: reduce signup abandonment by 40%.
-          </p>
-          <div style={{ display: "flex", gap: "8px", marginTop: "14px", flexWrap: "wrap" }}>
-            {[
-              { label: "PRIORITY: HIGH", bg: "#E36A2C18", color: "#C4561E" },
-              { label: "SPRINT 12", bg: "#23262B12", color: "#23262B" },
-              { label: "3 STORY POINTS", bg: "#F2A65A18", color: "#B07830" },
-            ].map((tag) => (
-              <span
-                key={tag.label}
-                style={{
-                  ...MONO,
-                  fontSize: "9px",
-                  fontWeight: 600,
-                  letterSpacing: "0.08em",
-                  background: tag.bg,
-                  color: tag.color,
-                  padding: "3px 10px",
-                  borderRadius: "2px",
-                }}
-              >
-                {tag.label}
-              </span>
-            ))}
+        <button onClick={onBack} style={{ ...MONO, fontSize: "10px", color: "#7A7F85", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", marginBottom: "12px" }}>
+          ← BACK TO SPECS
+        </button>
+        <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em" }}>BUILDCASE / SPECS</p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "6px" }}>
+          <h1 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "22px", color: "#23262B" }}>{spec.title}</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <button onClick={() => handleExport("json")} title="Export JSON"
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#7A7F85", padding: "4px" }}>
+              <Download style={{ width: 14, height: 14 }} />
+            </button>
+            <button onClick={() => handleExport("pdf")} title="Export PDF"
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#7A7F85", padding: "4px" }}>
+              <FileText style={{ width: 14, height: 14 }} />
+            </button>
+            <button onClick={() => { removeSpec(spec.id); toast({ title: "Spec deleted" }); onBack(); }}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#7A7F85", padding: "4px" }}>
+              <Trash2 style={{ width: 14, height: 14 }} />
+            </button>
           </div>
-        </SectionPanel>
+        </div>
+        {spec.description && <p style={{ fontSize: "13px", color: "#7A7F85", marginTop: "4px" }}>{spec.description}</p>}
       </motion.div>
 
       {/* User Stories */}
-      <motion.div variants={item}>
-        <SectionPanel icon={User} title="USER STORIES">
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {userStories.map((story, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "12px 16px",
-                  background: "#F9F6EF",
-                  border: "1px solid #D6D2C8",
-                  borderRadius: "4px",
-                  fontSize: "13px",
-                  color: "#23262B",
-                  lineHeight: "1.6",
-                }}
-              >
-                As a{" "}
-                <span style={{ fontWeight: 700, color: "#E36A2C" }}>{story.role}</span>, I want to{" "}
-                <span style={{ fontWeight: 600 }}>{story.action}</span> so that I can{" "}
-                <span style={{ color: "#7A7F85" }}>{story.benefit}</span>.
-              </div>
+      {spec.userStories.length > 0 && (
+        <motion.div variants={item} style={{ background: "#F7F4EC", border: "1px solid #D6D2C8", borderRadius: "4px", overflow: "hidden" }}>
+          <div style={{ padding: "10px 20px", borderBottom: "1px solid #D6D2C8", background: "#EDE9E0" }}>
+            <span style={{ ...MONO, fontSize: "10px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>USER STORIES · {spec.userStories.length}</span>
+          </div>
+          <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+            {spec.userStories.map((s, i) => (
+              <p key={i} style={{ fontSize: "13px", color: "#23262B", lineHeight: 1.6 }}>
+                As a <strong>{s.role}</strong>, I want <strong>{s.action}</strong> so that <strong>{s.benefit}</strong>.
+              </p>
             ))}
           </div>
-        </SectionPanel>
-      </motion.div>
+        </motion.div>
+      )}
 
-      {/* Functional Requirements */}
-      <motion.div variants={item}>
-        <SectionPanel icon={CheckSquare} title="FUNCTIONAL REQUIREMENTS">
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            {requirements.map((req, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "10px 0",
-                  borderBottom: i < requirements.length - 1 ? "1px solid #E8E4DC" : "none",
-                }}
-              >
-                <div
-                  style={{
-                    width: "14px",
-                    height: "14px",
-                    border: req.done ? "none" : "1px solid #D6D2C8",
-                    borderRadius: "2px",
-                    background: req.done ? "#E36A2C" : "transparent",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  {req.done && (
-                    <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                      <path d="M1 3L3.5 5.5L8 1" stroke="#F3EFE6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </div>
-                <span
-                  style={{
-                    fontSize: "13px",
-                    color: req.done ? "#7A7F85" : "#23262B",
-                    textDecoration: req.done ? "line-through" : "none",
-                  }}
-                >
-                  {req.text}
+      {/* Requirements */}
+      {spec.requirements.length > 0 && (
+        <motion.div variants={item} style={{ background: "#F7F4EC", border: "1px solid #D6D2C8", borderRadius: "4px", overflow: "hidden" }}>
+          <div style={{ padding: "10px 20px", borderBottom: "1px solid #D6D2C8", background: "#EDE9E0" }}>
+            <span style={{ ...MONO, fontSize: "10px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>
+              REQUIREMENTS · {spec.requirements.filter((r) => r.done).length}/{spec.requirements.length}
+            </span>
+          </div>
+          <div style={{ padding: "12px 20px", display: "flex", flexDirection: "column", gap: "6px" }}>
+            {spec.requirements.map((r, i) => (
+              <div key={i} onClick={() => toggleRequirement(spec.id, i)}
+                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 8px", borderRadius: "3px", cursor: "pointer", transition: "background 150ms" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#EDE9E0"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
+                <span style={{
+                  width: "16px", height: "16px", borderRadius: "3px", display: "flex", alignItems: "center", justifyContent: "center",
+                  border: r.done ? "none" : "1.5px solid #D6D2C8", background: r.done ? "#23262B" : "transparent",
+                }}>
+                  {r.done && <Check style={{ width: 10, height: 10, color: "#F3EFE6" }} />}
                 </span>
+                <span style={{ fontSize: "13px", color: r.done ? "#7A7F85" : "#23262B", textDecoration: r.done ? "line-through" : "none" }}>{r.text}</span>
               </div>
             ))}
           </div>
-        </SectionPanel>
-      </motion.div>
+        </motion.div>
+      )}
 
       {/* Edge Cases */}
-      <motion.div variants={item}>
-        <SectionPanel icon={AlertCircle} title="EDGE CASES">
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {edgeCases.map((ec, i) => (
-              <details
-                key={i}
-                style={{
-                  background: "#F9F6EF",
-                  border: "1px solid #D6D2C8",
-                  borderRadius: "4px",
-                  overflow: "hidden",
-                }}
-              >
-                <summary
-                  style={{
-                    padding: "12px 16px",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    color: "#23262B",
-                    listStyle: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  {ec.title}
-                  <span style={{ color: "#7A7F85", fontSize: "10px" }}>▼</span>
-                </summary>
-                <div
-                  style={{
-                    padding: "12px 16px",
-                    borderTop: "1px solid #D6D2C8",
-                    fontSize: "12px",
-                    color: "#7A7F85",
-                    lineHeight: "1.6",
-                  }}
-                >
-                  {ec.description}
-                </div>
+      {spec.edgeCases.length > 0 && (
+        <motion.div variants={item} style={{ background: "#F7F4EC", border: "1px solid #D6D2C8", borderRadius: "4px", overflow: "hidden" }}>
+          <div style={{ padding: "10px 20px", borderBottom: "1px solid #D6D2C8", background: "#EDE9E0" }}>
+            <span style={{ ...MONO, fontSize: "10px", letterSpacing: "0.1em", color: "#23262B", fontWeight: 600 }}>EDGE CASES · {spec.edgeCases.length}</span>
+          </div>
+          <div style={{ padding: "12px 20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+            {spec.edgeCases.map((ec, i) => (
+              <details key={i} style={{ fontSize: "13px", color: "#23262B" }}>
+                <summary style={{ cursor: "pointer", fontWeight: 500 }}>{ec.title}</summary>
+                <p style={{ marginTop: "6px", paddingLeft: "12px", color: "#7A7F85", lineHeight: 1.6 }}>{ec.description}</p>
               </details>
             ))}
           </div>
-        </SectionPanel>
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}
+
+/* ───── Main Specs Page ───── */
+export default function Specs() {
+  const { specs } = useSpecStore();
+  const [showForm, setShowForm] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+
+  const selectedSpec = specs.find((s) => s.id === selected);
+  if (selectedSpec) return <SpecDetail spec={selectedSpec} onBack={() => setSelected(null)} />;
+
+  return (
+    <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl space-y-6">
+      <motion.div variants={item}>
+        <p style={{ ...MONO, fontSize: "10px", color: "#7A7F85", letterSpacing: "0.1em" }}>BUILDCASE / SPECS</p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "6px" }}>
+          <h1 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "22px", color: "#23262B" }}>Spec Index</h1>
+          <button onClick={() => setShowForm(!showForm)} style={{
+            display: "flex", alignItems: "center", gap: "6px",
+            background: "#23262B", color: "#F3EFE6", border: "none", borderRadius: "4px",
+            padding: "8px 16px", fontSize: "12px", fontWeight: 600, cursor: "pointer", fontFamily: "'Inter', sans-serif",
+          }}>
+            <Plus style={{ width: 14, height: 14 }} /> New Spec
+          </button>
+        </div>
+        <p style={{ fontSize: "13px", color: "#7A7F85", marginTop: "4px" }}>Feature specifications and requirements.</p>
       </motion.div>
+
+      {showForm && <NewSpecForm onClose={() => setShowForm(false)} />}
+
+      {/* Spec List */}
+      {specs.length > 0 ? (
+        specs.map((spec) => {
+          const pc = priorityColor[spec.priority];
+          return (
+            <motion.div key={spec.id} variants={item} onClick={() => setSelected(spec.id)}
+              style={{
+                background: "#F7F4EC", border: "1px solid #D6D2C8", borderRadius: "4px", padding: "16px 20px",
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between",
+                transition: "border-color 150ms",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#E36A2C"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#D6D2C8"; }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <FileText style={{ width: 16, height: 16, color: "#7A7F85" }} />
+                <div>
+                  <p style={{ fontSize: "14px", fontWeight: 600, color: "#23262B" }}>{spec.title}</p>
+                  {spec.description && <p style={{ fontSize: "12px", color: "#7A7F85", marginTop: "2px", maxWidth: "500px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{spec.description}</p>}
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ ...MONO, fontSize: "9px", fontWeight: 600, background: pc.bg, color: pc.text, padding: "2px 8px", borderRadius: "2px" }}>{spec.priority.toUpperCase()}</span>
+                {spec.requirements.length > 0 && (
+                  <span style={{ ...MONO, fontSize: "9px", color: "#7A7F85" }}>
+                    {spec.requirements.filter((r) => r.done).length}/{spec.requirements.length}
+                  </span>
+                )}
+                <ChevronRight style={{ width: 14, height: 14, color: "#7A7F85" }} />
+              </div>
+            </motion.div>
+          );
+        })
+      ) : (
+        !showForm && (
+          <motion.div variants={item} style={{ textAlign: "center", padding: "50px", color: "#7A7F85" }}>
+            <FileText style={{ width: 32, height: 32, margin: "0 auto 12px", opacity: 0.4 }} />
+            <p style={{ ...MONO, fontSize: "11px", letterSpacing: "0.06em" }}>NO SPECS YET · CLICK "NEW SPEC" TO CREATE ONE</p>
+          </motion.div>
+        )
+      )}
     </motion.div>
   );
 }

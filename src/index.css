@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Loading spinner animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 @layer base {
   :root {
     /* Warm parchment palette */
