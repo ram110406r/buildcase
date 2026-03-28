@@ -18,10 +18,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 
 const queryClient = new QueryClient();
 
-// Protected Route component
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+// Authentication wrapper for all routes
+function AuthWrapper({ children }: { children: React.ReactNode }) {
   const [user, loading] = useAuthState(auth);
   
+  // Show loading screen while checking auth status
   if (loading) {
     return (
       <div style={{ 
@@ -29,17 +30,42 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
         display: "flex", 
         alignItems: "center", 
         justifyContent: "center",
-        background: "#F7F4EC"
+        background: "linear-gradient(135deg, #F8F6F2 0%, #F5F2ED 100%)",
       }}>
-        <p style={{ fontFamily: "'IBM Plex Mono', monospace", color: "#7A7F85" }}>Loading...</p>
+        <div style={{ textAlign: "center" }}>
+          <svg 
+            style={{ 
+              width: 40, 
+              height: 40, 
+              animation: "spin 1s linear infinite",
+              color: "#F28C28",
+              marginBottom: "16px"
+            }} 
+            viewBox="0 0 24 24" 
+            fill="none"
+          >
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+          <p style={{ 
+            fontFamily: "'IBM Plex Mono', monospace", 
+            color: "#7A7F85",
+            fontSize: "13px",
+            letterSpacing: "0.05em"
+          }}>
+            Loading...
+          </p>
+        </div>
       </div>
     );
   }
   
+  // If not authenticated, redirect to login page
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
   
+  // User is authenticated, show the protected content
   return <>{children}</>;
 }
 
@@ -50,14 +76,14 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Public routes */}
+          {/* Public route - Login/Register */}
           <Route path="/auth" element={<Auth />} />
           
-          {/* Protected routes */}
+          {/* All other routes are protected */}
           <Route element={
-            <ProtectedRoute>
+            <AuthWrapper>
               <AppLayout />
-            </ProtectedRoute>
+            </AuthWrapper>
           }>
             <Route path="/" element={<Dashboard />} />
             <Route path="/research" element={<Research />} />
